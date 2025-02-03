@@ -74,12 +74,15 @@ export default function Navbar() {
                 <Search className="h-4 w-4" />
               </Button>
             </form>
-            <Button variant="outline">Đăng nhập</Button>
-            <Button>Đăng ký</Button>
+            <Link href="/sign-in">
+              <Button variant="outline">Đăng nhập</Button>
+            </Link>
+            <Link href="/sign-up">
+              <Button>Đăng ký</Button>
+            </Link>
           </div>
         </div>
       </div>
     </nav>
   )
 }
-

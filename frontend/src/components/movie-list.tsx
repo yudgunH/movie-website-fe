@@ -1,51 +1,54 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import MovieCard from "./movie-card"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid"; // Tạo ID duy nhất
+import MovieCard from "./movie-card";
+import { Button } from "@/components/ui/button";
 
 interface Movie {
-  id: number
-  title: string
-  poster: string
-  rating: number
-  year: number
-  genre: string
+  id: string; // Thay number thành string để tương thích uuid
+  title: string;
+  poster: string;
+  rating: number;
+  year: number;
+  genre: string;
 }
 
 interface MovieListProps {
-  title: string
-  category: string
+  title: string;
+  category: string;
 }
 
 export default function MovieList({ title, category }: MovieListProps) {
-  const [movies, setMovies] = useState<Movie[]>([])
-  const [page, setPage] = useState(1)
-  const [loading, setLoading] = useState(false)
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   const fetchMovies = async () => {
-    setLoading(true)
-    // Simulating API call with setTimeout
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    setLoading(true);
+    
+    // Giả lập API với setTimeout
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Generate dummy data
-    const newMovies = Array.from({ length: 10 }, (_, i) => ({
-      id: (page - 1) * 10 + i + 1,
-      title: `Movie ${(page - 1) * 10 + i + 1}`,
-      poster: `/placeholder.svg?height=450&width=300&text=Movie+${(page - 1) * 10 + i + 1}`,
-      rating: 4, // Fixed rating instead of random
-      year: 2023, // Fixed year instead of random
-      genre: "Action", // Fixed genre instead of random
-    }))
+    // Tạo dữ liệu phim giả lập
+    const newMovies = Array.from({ length: 10 }, () => ({
+      id: uuidv4(), // Đảm bảo mỗi phim có một ID duy nhất
+      title: `Movie ${Math.random().toString(36).substring(7)}`, // Tên ngẫu nhiên
+      poster: `/placeholder.svg?height=450&width=300&text=Movie`, // Ảnh giả lập
+      rating: 4, // Giá trị cố định
+      year: 2023, // Giá trị cố định
+      genre: "Action", // Giá trị cố định
+    }));
 
-    setMovies((prevMovies) => [...prevMovies, ...newMovies])
-    setPage((prevPage) => prevPage + 1)
-    setLoading(false)
-  }
+    // Cập nhật danh sách phim, tránh trùng lặp ID
+    setMovies((prevMovies) => [...prevMovies, ...newMovies]);
+    setPage((prevPage) => prevPage + 1);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    fetchMovies()
-  }, []) //Fixed: Added empty dependency array to useEffect
+    fetchMovies();
+  }, []); // Chạy một lần khi component mount
 
   return (
     <section className="mb-12">
@@ -63,6 +66,5 @@ export default function MovieList({ title, category }: MovieListProps) {
         </div>
       )}
     </section>
-  )
+  );
 }
-

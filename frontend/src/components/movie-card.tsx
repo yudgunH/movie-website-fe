@@ -9,7 +9,7 @@ import { Star } from "lucide-react"
 
 interface MovieCardProps {
   movie: {
-    id: number
+    id: string
     title: string
     poster: string
     rating: number
