@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { PlayCircle, Star } from "lucide-react"
@@ -48,6 +49,12 @@ export default function MovieDetail() {
   const [comment, setComment] = useState("")
   const [selectedEpisode, setSelectedEpisode] = useState(1)
 
+  const router = useRouter();
+  
+  const handlePlayVideo = () => {
+    router.push(`/watch/${movie.id}`);
+  };
+
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Hero Section */}
@@ -56,9 +63,10 @@ export default function MovieDetail() {
         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
         <div className="absolute bottom-0 left-0 p-8">
           <h1 className="text-4xl font-bold mb-2">{movie.title}</h1>
-          <Button className="bg-red-600 hover:bg-red-700">
+          <Button className="bg-red-600 hover:bg-red-700" onClick={handlePlayVideo}>
             <PlayCircle className="mr-2 h-4 w-4" /> Play Video
           </Button>
+          
         </div>
       </div>
 
