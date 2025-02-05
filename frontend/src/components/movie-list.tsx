@@ -31,10 +31,10 @@ export default function MovieList({ title, category }: MovieListProps) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Tạo dữ liệu phim giả lập
-    const newMovies = Array.from({ length: 10 }, () => ({
+    const newMovies = Array.from({ length: 5 }, () => ({
       id: uuidv4(), // Đảm bảo mỗi phim có một ID duy nhất
       title: `Movie ${Math.random().toString(36).substring(7)}`, // Tên ngẫu nhiên
-      poster: `/placeholder.svg?height=450&width=300&text=Movie`, // Ảnh giả lập
+      poster: `/phim1.jpg?height=950&width=300&text=Movie`, // Ảnh giả lập
       rating: 4, // Giá trị cố định
       year: 2023, // Giá trị cố định
       genre: "Action", // Giá trị cố định

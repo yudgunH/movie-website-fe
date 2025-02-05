@@ -215,7 +215,7 @@ export function VideoPlayer({ src, poster, onNext, hasNextEpisode }: VideoPlayer
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"
+            className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
           >
             <div className="absolute bottom-0 left-0 right-0 p-4 space-y-4">
               {/* Progress Bar */}

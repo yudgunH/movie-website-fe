@@ -23,7 +23,7 @@ export default function SignUp() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
+    <div className="flex items-center justify-center min-h-screen bg-background" style={{ backgroundImage: "url('/sign_in_bg.png?height=1080&width=1920')" }}>
       <Card className="w-[350px]">
         <CardHeader>
           <CardTitle>Đăng ký</CardTitle>
