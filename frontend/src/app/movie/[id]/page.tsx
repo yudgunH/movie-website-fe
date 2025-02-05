@@ -16,7 +16,7 @@ const movie = {
   title: "Stranger Things",
   description:
     "When a young boy disappears, his mother, a police chief and his friends must confront terrifying supernatural forces in order to get him back.",
-  poster: "/placeholder.svg?height=1080&width=1920",
+  poster: "/feature_banner.png?height=1080&width=1920",
   genres: ["Drama", "Fantasy", "Horror"],
   duration: "50min per episode",
   releaseYear: 2016,

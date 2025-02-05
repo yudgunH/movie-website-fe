@@ -1,179 +1,118 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Facebook, Mail } from "lucide-react"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
+import { FaGoogle, FaFacebook } from "react-icons/fa"
 
-export default function AuthForm() {
-  const [isResetting, setIsResetting] = useState(false)
+export default function LoginPage() {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [rememberMe, setRememberMe] = useState(false)
+  const router = useRouter()
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Handle login logic here
+    console.log("Login attempt with:", { email, password, rememberMe })
+    // Redirect to home page after successful login
+    router.push("/")
+  }
 
   return (
-    <div
-      className="min-h-screen w-full flex"
-      style={{
-        backgroundImage:
-          "url('sign_in_bg.png?height=1080&width=1920')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <div
-        className="w-full max-w-md p-8 flex items-center"
-        style={{
-          background: "linear-gradient(to right, rgba(0, 0, 0, 0.85), transparent)",
-        }}
-      >
-        <div className="w-full pl-8">
-          <div className="p-6">
-            {isResetting ? (
-              <div className="space-y-4">
-                <div className="space-y-2 text-center">
-                  <h1 className="text-2xl font-semibold tracking-tight text-white">Reset Password</h1>
-                  <p className="text-sm text-neutral-400">Enter your email to receive reset instructions</p>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="reset-email" className="text-neutral-200">
-                    Email
-                  </Label>
-                  <Input
-                    id="reset-email"
-                    placeholder="name@example.com"
-                    type="email"
-                    className="bg-black/30 border-neutral-800 text-neutral-200 placeholder:text-neutral-500"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white">Send Instructions</Button>
-                  <Button
-                    variant="ghost"
-                    className="w-full text-neutral-400 hover:text-white hover:bg-neutral-800"
-                    onClick={() => setIsResetting(false)}
-                  >
-                    Back to Login
-                  </Button>
-                </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 p-4">
+      <div className="w-full max-w-md">
+        <Card className="bg-gray-800 border-gray-700">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold text-center text-white">Login to MovieStream</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-white">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                />
               </div>
-            ) : (
-              <Tabs defaultValue="login" className="space-y-6">
-                <TabsList className="w-full bg-black/30">
-                  <TabsTrigger
-                    value="login"
-                    className="w-full data-[state=active]:bg-amber-600 data-[state=active]:text-white"
-                  >
-                    Login
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="register"
-                    className="w-full data-[state=active]:bg-amber-600 data-[state=active]:text-white"
-                  >
-                    Register
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="login" className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-neutral-200">
-                      Email
-                    </Label>
-                    <Input
-                      id="email"
-                      placeholder="name@example.com"
-                      type="email"
-                      className="bg-black/30 border-neutral-800 text-neutral-200 placeholder:text-neutral-500"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="password" className="text-neutral-200">
-                        Password
-                      </Label>
-                      <Button
-                        variant="link"
-                        className="text-amber-500 hover:text-amber-400"
-                        onClick={() => setIsResetting(true)}
-                      >
-                        Forgot password?
-                      </Button>
-                    </div>
-                    <Input id="password" type="password" className="bg-black/30 border-neutral-800 text-neutral-200" />
-                  </div>
-                  <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white">Login</Button>
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-neutral-800" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-black/40 px-2 text-neutral-500">Or continue with</span>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <Button
-                      variant="outline"
-                      className="bg-black/30 border-neutral-800 text-neutral-200 hover:bg-neutral-800"
-                    >
-                      <Mail className="mr-2 h-4 w-4" />
-                      Google
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="bg-black/30 border-neutral-800 text-neutral-200 hover:bg-neutral-800"
-                    >
-                      <Facebook className="mr-2 h-4 w-4" />
-                      Facebook
-                    </Button>
-                  </div>
-                </TabsContent>
-                <TabsContent value="register" className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="register-name" className="text-neutral-200">
-                      Full Name
-                    </Label>
-                    <Input
-                      id="register-name"
-                      placeholder="John Doe"
-                      className="bg-black/30 border-neutral-800 text-neutral-200 placeholder:text-neutral-500"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="register-email" className="text-neutral-200">
-                      Email
-                    </Label>
-                    <Input
-                      id="register-email"
-                      placeholder="name@example.com"
-                      type="email"
-                      className="bg-black/30 border-neutral-800 text-neutral-200 placeholder:text-neutral-500"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="register-password" className="text-neutral-200">
-                      Password
-                    </Label>
-                    <Input
-                      id="register-password"
-                      type="password"
-                      className="bg-black/30 border-neutral-800 text-neutral-200"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="register-confirm" className="text-neutral-200">
-                      Confirm Password
-                    </Label>
-                    <Input
-                      id="register-confirm"
-                      type="password"
-                      className="bg-black/30 border-neutral-800 text-neutral-200"
-                    />
-                  </div>
-                  <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white">Create Account</Button>
-                </TabsContent>
-              </Tabs>
-            )}
-          </div>
-        </div>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-white">
+                  Password
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="remember"
+                  checked={rememberMe}
+                  onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                />
+                <Label htmlFor="remember" className="text-sm text-gray-300">
+                  Remember me
+                </Label>
+              </div>
+              <Button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white">
+                Login
+              </Button>
+            </form>
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-gray-600"></span>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-gray-800 px-2 text-gray-400">Or continue with</span>
+              </div>
+            </div>
+            <div className="flex space-x-4">
+              <Button variant="outline" className="w-full bg-gray-700 hover:bg-gray-600 text-white border-gray-600">
+                <FaGoogle className="mr-2 h-4 w-4" /> Google
+              </Button>
+              <Button variant="outline" className="w-full bg-gray-700 hover:bg-gray-600 text-white border-gray-600">
+                <FaFacebook className="mr-2 h-4 w-4" /> Facebook
+              </Button>
+            </div>
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-2">
+            <Link href="/forgot-password" className="text-sm text-blue-400 hover:underline">
+              Forgot your password?
+            </Link>
+            <p className="text-sm text-gray-400">
+              Don&apos;t have an account?{" "}
+              <Link href="/sign-up" className="text-blue-400 hover:underline">
+                Sign up
+              </Link>
+            </p>
+          </CardFooter>
+        </Card>
       </div>
+      <Image
+        src="/placeholder.svg?height=1080&width=1920"
+        alt="Background"
+        layout="fill"
+        objectFit="cover"
+        className="absolute inset-0 -z-10 opacity-20"
+      />
     </div>
   )
 }
