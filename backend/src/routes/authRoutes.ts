@@ -1,14 +1,11 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import { AuthController } from "../controllers/authController";
+import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.post("/register", async (req: Request, res: Response) => {
-  await AuthController.register(req, res);
-});
-
-router.post("/login", async (req: Request, res: Response) => {
-  await AuthController.login(req, res);
-});
+router.post("/register-user", AuthController.registerUser);
+router.post("/register-admin", authenticate, authorizeAdmin, AuthController.registerAdmin);
+router.post("/login", AuthController.login);
 
 export default router;
