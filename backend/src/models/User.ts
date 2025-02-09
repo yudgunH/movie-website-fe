@@ -1,6 +1,6 @@
-import { Model, Table, Column, DataType } from "sequelize-typescript";
+import { Model, Table, Column, DataType, CreatedAt, UpdatedAt } from "sequelize-typescript";
 
-@Table({ tableName: "Users", timestamps: true })
+@Table({ tableName: "Users", timestamps: true, underscored: true })
 export class User extends Model<User> {
   @Column({ type: DataType.INTEGER, primaryKey: true, autoIncrement: true })
   id!: number;
@@ -17,9 +17,11 @@ export class User extends Model<User> {
   @Column({ type: DataType.ENUM("user", "admin"), allowNull: false, defaultValue: "user" })
   role!: "user" | "admin";
 
-  @Column({ type: DataType.DATE, defaultValue: DataType.NOW })
+  @CreatedAt
+  @Column({ type: DataType.DATE })
   created_at!: Date;
 
-  @Column({ type: DataType.DATE, defaultValue: DataType.NOW })
+  @UpdatedAt
+  @Column({ type: DataType.DATE })
   updated_at!: Date;
 }
