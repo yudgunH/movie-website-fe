@@ -1,6 +1,9 @@
-import { Model, Table, Column, DataType, CreatedAt, UpdatedAt } from "sequelize-typescript";
+import { Model, Table, Column, DataType, CreatedAt, UpdatedAt, HasMany } from "sequelize-typescript";
+import { MovieComment } from "./MovieComment";
+import { UserWatchHistory } from "./UserWatchHistory";
+import { UserFavorite } from "./UserFavorite";
 
-@Table({ tableName: "Users", timestamps: true, underscored: true })
+@Table({ tableName: "Users", underscored: true })
 export class User extends Model<User> {
   @Column({ type: DataType.INTEGER, primaryKey: true, autoIncrement: true })
   id!: number;
@@ -24,4 +27,16 @@ export class User extends Model<User> {
   @UpdatedAt
   @Column({ type: DataType.DATE })
   updated_at!: Date;
+
+  // Quan hệ với bảng MovieComment (User có thể viết nhiều comment)
+  @HasMany(() => MovieComment)
+  comments!: MovieComment[];
+
+  // Quan hệ với bảng UserWatchHistory (Lịch sử xem phim)
+  @HasMany(() => UserWatchHistory)
+  watchHistories!: UserWatchHistory[];
+
+  // Quan hệ với bảng UserFavorite (Danh sách yêu thích)
+  @HasMany(() => UserFavorite)
+  favorites!: UserFavorite[];
 }

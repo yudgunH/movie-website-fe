@@ -1,6 +1,11 @@
 import { Sequelize } from "sequelize-typescript";
 import dotenv from "dotenv";
-import { User } from "../models/User"; // Import model User
+import { User } from "../models/User";
+import { Movie } from "../models/Movie";
+import { Episode } from "../models/Episode";
+import { MovieComment } from "../models/MovieComment";
+import { UserWatchHistory } from "../models/UserWatchHistory";
+import { UserFavorite } from "../models/UserFavorite";
 
 dotenv.config();
 
@@ -11,7 +16,7 @@ const sequelize = new Sequelize({
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
   dialect: "postgres",
-  models: [User], // Thêm model User vào đây
+  models: [User, Movie, Episode, MovieComment, UserWatchHistory, UserFavorite], // Import toàn bộ models
   logging: false,
 });
 
