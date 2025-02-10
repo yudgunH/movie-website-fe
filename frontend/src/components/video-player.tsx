@@ -29,9 +29,11 @@ interface VideoPlayerProps {
   poster?: string
   onNext?: () => void
   hasNextEpisode?: boolean
+  videoSize: "normal" | "theater" | "fullscreen"
+  setVideoSize: (size: "normal" | "theater" | "fullscreen") => void
 }
 
-export function VideoPlayer({ src, poster, onNext, hasNextEpisode }: VideoPlayerProps) {
+export function VideoPlayer({ src, poster, onNext, hasNextEpisode, videoSize, setVideoSize }: VideoPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
@@ -43,6 +45,8 @@ export function VideoPlayer({ src, poster, onNext, hasNextEpisode }: VideoPlayer
   const [showVolumeSlider, setShowVolumeSlider] = useState(false)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isSubtitlesOpen, setIsSubtitlesOpen] = useState(false)
+  const [showPlayPauseIndicator, setShowPlayPauseIndicator] = useState(false)
+  const [showCursor, setShowCursor] = useState(true)
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const volumeControlRef = useRef<HTMLDivElement>(null)
@@ -91,7 +95,7 @@ export function VideoPlayer({ src, poster, onNext, hasNextEpisode }: VideoPlayer
     return () => {
       window.removeEventListener("keydown", handleKeyDown)
     }
-  }, [isPlaying])
+  }, [])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -108,7 +112,7 @@ export function VideoPlayer({ src, poster, onNext, hasNextEpisode }: VideoPlayer
 
   const togglePlay = () => {
     if (!videoRef.current) return
-  
+
     if (videoRef.current.paused) {
       videoRef.current.play()
       setIsPlaying(true)
@@ -116,8 +120,10 @@ export function VideoPlayer({ src, poster, onNext, hasNextEpisode }: VideoPlayer
       videoRef.current.pause()
       setIsPlaying(false)
     }
+
+    setShowPlayPauseIndicator(true)
+    setTimeout(() => setShowPlayPauseIndicator(false), 500)
   }
-  
 
   const handleVolumeChange = (value: number[]) => {
     if (videoRef.current) {
@@ -192,22 +198,54 @@ export function VideoPlayer({ src, poster, onNext, hasNextEpisode }: VideoPlayer
     console.log("Video clicked")
     togglePlay()
   }
-  
+
+  const toggleVideoSize = () => {
+    if (videoSize === "normal") {
+      setVideoSize("theater")
+    } else if (videoSize === "theater") {
+      setVideoSize("fullscreen")
+    } else {
+      setVideoSize("normal")
+    }
+  }
 
   return (
     <div
       ref={containerRef}
-      className="relative group w-full aspect-video bg-black"
-      onMouseMove={showControlsTemporarily}
+      className={`relative group bg-black ${
+        videoSize === "normal"
+          ? "w-full aspect-video"
+          : videoSize === "theater"
+            ? "w-full aspect-video"
+            : "w-full h-full"
+      }`}
+      onMouseMove={() => {
+        setShowCursor(true)
+        showControlsTemporarily()
+      }}
       onMouseLeave={() => {
         if (isPlaying && !isSettingsOpen && !isSubtitlesOpen && !showVolumeSlider) {
+          setShowCursor(false)
           setShowControls(false)
         }
       }}
+      style={{ cursor: showCursor ? "auto" : "none" }}
     >
       <video ref={videoRef} className="w-full h-full" src={src} poster={poster} onClick={handleVideoClick} />
 
       {/* Video Controls */}
+      <AnimatePresence>
+        {showPlayPauseIndicator && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black bg-opacity-50 rounded-full p-4"
+          >
+            {isPlaying ? <Play className="h-12 w-12 text-white" /> : <Pause className="h-12 w-12 text-white" />}
+          </motion.div>
+        )}
+      </AnimatePresence>
       <AnimatePresence>
         {(showControls || isSettingsOpen || isSubtitlesOpen || showVolumeSlider) && (
           <motion.div
@@ -332,9 +370,40 @@ export function VideoPlayer({ src, poster, onNext, hasNextEpisode }: VideoPlayer
                     variant="ghost"
                     size="icon"
                     className="text-white hover:bg-white/20"
-                    onClick={toggleFullscreen}
+                    onClick={toggleVideoSize}
                   >
-                    <Maximize className="h-6 w-6" />
+                    {videoSize === "normal" ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <rect x="2" y="2" width="20" height="20" rx="2" ry="2"></rect>
+                        <rect x="7" y="7" width="10" height="10"></rect>
+                      </svg>
+                    ) : videoSize === "theater" ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+                      </svg>
+                    ) : (
+                      <Maximize className="h-6 w-6" />
+                    )}
                   </Button>
                 </div>
               </div>

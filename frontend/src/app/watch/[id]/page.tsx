@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { VideoPlayer } from "@/components/video-player"
@@ -42,6 +42,23 @@ export default function WatchPage() {
   const [selectedEpisode, setSelectedEpisode] = useState(1)
   const [comment, setComment] = useState("")
   const [userRating, setUserRating] = useState(0)
+  const [videoSize, setVideoSize] = useState<"normal" | "theater" | "fullscreen">("normal")
+  const [showCursor, setShowCursor] = useState(true)
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout
+    const handleMouseMove = () => {
+      setShowCursor(true)
+      clearTimeout(timeout)
+      timeout = setTimeout(() => setShowCursor(false), 3000)
+    }
+
+    document.addEventListener("mousemove", handleMouseMove)
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove)
+      clearTimeout(timeout)
+    }
+  }, [])
 
   const handleNextEpisode = () => {
     if (selectedEpisode < movieData.episodes.length) {
@@ -52,126 +69,139 @@ export default function WatchPage() {
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Main Video Player */}
-      <div className="w-full max-w-[1920px] mx-auto">
+      <div
+        className={`${
+          videoSize === "normal"
+            ? "w-[70%] max-w-[1200px] mx-auto"
+            : videoSize === "theater"
+              ? "w-full max-w-[1500px] mx-auto"
+              : "fixed inset-0 z-50 bg-black"
+        }`}
+        style={{ cursor: showCursor ? "auto" : "none" }}
+      >
         <VideoPlayer
           src={movieData.videoUrl}
           poster={movieData.poster}
           onNext={handleNextEpisode}
           hasNextEpisode={selectedEpisode < movieData.episodes.length}
+          videoSize={videoSize}
+          setVideoSize={setVideoSize}
         />
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            {/* Episode Information */}
-            <div className="mb-8">
-              <h1 className="text-2xl font-bold mb-2">{movieData.title}</h1>
-              <h2 className="text-xl mb-4">
-                Episode {selectedEpisode}: {movieData.episodes[selectedEpisode - 1]?.title}
-              </h2>
-              <p className="text-gray-400">{movieData.description}</p>
-            </div>
-
-            {/* Episode List */}
-            <div className="mb-8">
-              <h3 className="text-xl font-bold mb-4">Episodes</h3>
-              <div className="flex flex-wrap gap-2">
-                {movieData.episodes.map((episode) => (
-                  <Button
-                    key={episode.id}
-                    variant={selectedEpisode === episode.number ? "default" : "outline"}
-                    onClick={() => setSelectedEpisode(episode.number)}
-                    className={`min-w-[48px] ${
-                      selectedEpisode === episode.number ? "bg-red-600 hover:bg-red-700" : ""
-                    }`}
-                  >
-                    {episode.number}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            {/* Comments Section */}
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold">Comments</h3>
-                <Button variant="outline" className="gap-2">
-                  <AlertTriangle className="h-4 w-4" />
-                  Report Issue
-                </Button>
+      {videoSize !== "fullscreen" && (
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              {/* Episode Information */}
+              <div className="mb-8">
+                <h1 className="text-2xl font-bold mb-2">{movieData.title}</h1>
+                <h2 className="text-xl mb-4">
+                  Episode {selectedEpisode}: {movieData.episodes[selectedEpisode - 1]?.title}
+                </h2>
+                <p className="text-gray-400">{movieData.description}</p>
               </div>
 
-              {/* Rating */}
-              <div className="flex items-center gap-2 mb-4">
-                <div className="flex">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      className={`h-6 w-6 cursor-pointer ${
-                        star <= userRating ? "text-yellow-400 fill-yellow-400" : "text-gray-400"
+              {/* Episode List */}
+              <div className="mb-8">
+                <h3 className="text-xl font-bold mb-4">Episodes</h3>
+                <div className="flex flex-wrap gap-2">
+                  {movieData.episodes.map((episode) => (
+                    <Button
+                      key={episode.id}
+                      variant={selectedEpisode === episode.number ? "default" : "outline"}
+                      onClick={() => setSelectedEpisode(episode.number)}
+                      className={`min-w-[48px] ${
+                        selectedEpisode === episode.number ? "bg-red-600 hover:bg-red-700" : ""
                       }`}
-                      onClick={() => setUserRating(star)}
-                    />
+                    >
+                      {episode.number}
+                    </Button>
                   ))}
                 </div>
-                <span className="text-sm text-gray-400">
-                  {userRating > 0 ? `${userRating}/5` : "Rate this episode"}
-                </span>
               </div>
 
-              {/* Comment Input */}
-              <div className="flex gap-2 mb-6">
-                <Input
-                  placeholder="Add a comment..."
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  className="bg-gray-800 border-gray-700"
-                />
-                <Button>Comment</Button>
-              </div>
+              {/* Comments Section */}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold">Comments</h3>
+                  <Button variant="outline" className="gap-2">
+                    <AlertTriangle className="h-4 w-4" />
+                    Report Issue
+                  </Button>
+                </div>
 
-              {/* Comment List */}
-              <div className="space-y-4">
-                {movieData.comments.map((comment) => (
-                  <div key={comment.id} className="bg-gray-800 rounded-lg p-4">
-                    <div className="flex justify-between mb-2">
-                      <span className="font-semibold">{comment.user}</span>
-                      <span className="text-sm text-gray-400">{comment.timestamp}</span>
-                    </div>
-                    <p>{comment.content}</p>
+                {/* Rating */}
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="flex">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={star}
+                        className={`h-6 w-6 cursor-pointer ${
+                          star <= userRating ? "text-yellow-400 fill-yellow-400" : "text-gray-400"
+                        }`}
+                        onClick={() => setUserRating(star)}
+                      />
+                    ))}
                   </div>
-                ))}
+                  <span className="text-sm text-gray-400">
+                    {userRating > 0 ? `${userRating}/5` : "Rate this episode"}
+                  </span>
+                </div>
+
+                {/* Comment Input */}
+                <div className="flex gap-2 mb-6">
+                  <Input
+                    placeholder="Add a comment..."
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    className="bg-gray-800 border-gray-700"
+                  />
+                  <Button>Comment</Button>
+                </div>
+
+                {/* Comment List */}
+                <div className="space-y-4">
+                  {movieData.comments.map((comment) => (
+                    <div key={comment.id} className="bg-gray-800 rounded-lg p-4">
+                      <div className="flex justify-between mb-2">
+                        <span className="font-semibold">{comment.user}</span>
+                        <span className="text-sm text-gray-400">{comment.timestamp}</span>
+                      </div>
+                      <p>{comment.content}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Similar Movies Sidebar */}
-          <div>
-            <h3 className="text-xl font-bold mb-4">You May Also Like</h3>
-            <div className="grid gap-4">
-              {movieData.similarMovies.map((movie) => (
-                <Link key={movie.id} href={`/watch/${movie.id}`}>
-                  <Card className="bg-gray-800 hover:bg-gray-700 transition-colors">
-                    <CardContent className="p-2">
-                      <div className="relative aspect-video mb-2">
-                        <Image
-                          src={movie.poster || "/placeholder.svg"}
-                          alt={movie.title}
-                          layout="fill"
-                          objectFit="cover"
-                          className="rounded-md"
-                        />
-                      </div>
-                      <p className="font-semibold truncate">{movie.title}</p>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
+            {/* Similar Movies Sidebar */}
+            <div>
+              <h3 className="text-xl font-bold mb-4">You May Also Like</h3>
+              <div className="grid gap-4">
+                {movieData.similarMovies.map((movie) => (
+                  <Link key={movie.id} href={`/watch/${movie.id}`}>
+                    <Card className="bg-gray-800 hover:bg-gray-700 transition-colors">
+                      <CardContent className="p-2">
+                        <div className="relative aspect-video mb-2">
+                          <Image
+                            src={movie.poster || "/placeholder.svg"}
+                            alt={movie.title}
+                            layout="fill"
+                            objectFit="cover"
+                            className="rounded-md"
+                          />
+                        </div>
+                        <p className="font-semibold truncate">{movie.title}</p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
