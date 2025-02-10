@@ -46,7 +46,6 @@ export function VideoPlayer({ src, poster, onNext, hasNextEpisode, videoSize, se
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isSubtitlesOpen, setIsSubtitlesOpen] = useState(false)
   const [showPlayPauseIndicator, setShowPlayPauseIndicator] = useState(false)
-  const [showCursor, setShowCursor] = useState(true)
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const volumeControlRef = useRef<HTMLDivElement>(null)
@@ -110,6 +109,18 @@ export function VideoPlayer({ src, poster, onNext, hasNextEpisode, videoSize, se
     }
   }, [])
 
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement)
+    }
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange)
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange)
+    }
+  }, [])
+
   const togglePlay = () => {
     if (!videoRef.current) return
 
@@ -153,16 +164,17 @@ export function VideoPlayer({ src, poster, onNext, hasNextEpisode, videoSize, se
   const toggleFullscreen = () => {
     if (!containerRef.current) return
 
-    if (!isFullscreen) {
+    if (!document.fullscreenElement) {
       if (containerRef.current.requestFullscreen) {
         containerRef.current.requestFullscreen()
       }
+      setIsFullscreen(true)
     } else {
       if (document.exitFullscreen) {
         document.exitFullscreen()
       }
+      setIsFullscreen(false)
     }
-    setIsFullscreen(!isFullscreen)
   }
 
   const formatTime = (time: number) => {
@@ -204,34 +216,39 @@ export function VideoPlayer({ src, poster, onNext, hasNextEpisode, videoSize, se
       setVideoSize("theater")
     } else if (videoSize === "theater") {
       setVideoSize("fullscreen")
+      toggleFullscreen()
     } else {
       setVideoSize("normal")
+      if (document.fullscreenElement) {
+        document.exitFullscreen()
+      }
     }
   }
 
   return (
     <div
       ref={containerRef}
-      className={`relative group bg-black ${
+      className={`relative group bg-black cursor-pointer ${
         videoSize === "normal"
           ? "w-full aspect-video"
           : videoSize === "theater"
             ? "w-full aspect-video"
-            : "w-full h-full"
+            : "fixed inset-0 z-50 w-screen h-screen"
       }`}
-      onMouseMove={() => {
-        setShowCursor(true)
-        showControlsTemporarily()
-      }}
+      onMouseMove={showControlsTemporarily}
       onMouseLeave={() => {
         if (isPlaying && !isSettingsOpen && !isSubtitlesOpen && !showVolumeSlider) {
-          setShowCursor(false)
           setShowControls(false)
         }
       }}
-      style={{ cursor: showCursor ? "auto" : "none" }}
     >
-      <video ref={videoRef} className="w-full h-full" src={src} poster={poster} onClick={handleVideoClick} />
+      <video
+        ref={videoRef}
+        className={`w-full h-full object-contain ${videoSize === "fullscreen" ? "absolute inset-0" : ""}`}
+        src={src}
+        poster={poster}
+        onClick={handleVideoClick}
+      />
 
       {/* Video Controls */}
       <AnimatePresence>
@@ -253,21 +270,23 @@ export function VideoPlayer({ src, poster, onNext, hasNextEpisode, videoSize, se
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+            className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"
           >
             <div className="absolute bottom-0 left-0 right-0 p-4 space-y-4">
               {/* Progress Bar */}
-              <Slider
-                value={[currentTime]}
-                min={0}
-                max={duration}
-                step={1}
-                onValueChange={handleSeek}
-                className="w-full [&>span:first-child]:h-1 [&>span:first-child]:bg-white/30 [&_[role=slider]]:h-3 [&_[role=slider]]:w-3 [&_[role=slider]]:border-0 [&>span:first-child_span]:bg-red-600"
-              />
+              <div className="pointer-events-auto">
+                <Slider
+                  value={[currentTime]}
+                  min={0}
+                  max={duration}
+                  step={1}
+                  onValueChange={handleSeek}
+                  className="w-full [&>span:first-child]:h-1 [&>span:first-child]:bg-white/30 [&_[role=slider]]:h-3 [&_[role=slider]]:w-3 [&_[role=slider]]:border-0 [&>span:first-child_span]:bg-red-600"
+                />
+              </div>
 
               {/* Controls */}
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between pointer-events-auto">
                 <div className="flex items-center space-x-4">
                   <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" onClick={togglePlay}>
                     {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
