@@ -9,8 +9,8 @@ import type React from "react" // Added import for React
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Ong Bat Phim Movie",
-  description: "Watch the latest movies and TV shows",
+  title: "AllDrama Movies",
+  description: "Watch the latest drama films",
 }
 
 export default function RootLayout({
