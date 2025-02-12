@@ -6,12 +6,12 @@ import {
   Pause,
   Volume2,
   VolumeX,
-  Maximize,
   Settings,
   Subtitles,
   SkipForward,
   Rewind,
   FastForward,
+  Minimize2,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
@@ -46,6 +46,8 @@ export function VideoPlayer({ src, poster, onNext, hasNextEpisode, videoSize, se
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isSubtitlesOpen, setIsSubtitlesOpen] = useState(false)
   const [showPlayPauseIndicator, setShowPlayPauseIndicator] = useState(false)
+  const [videoWidth, setVideoWidth] = useState(0)
+  const [videoHeight, setVideoHeight] = useState(0)
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const volumeControlRef = useRef<HTMLDivElement>(null)
@@ -56,7 +58,11 @@ export function VideoPlayer({ src, poster, onNext, hasNextEpisode, videoSize, se
     if (!video) return
 
     const handleTimeUpdate = () => setCurrentTime(video.currentTime)
-    const handleLoadedMetadata = () => setDuration(video.duration)
+    const handleLoadedMetadata = () => {
+      setDuration(video.duration)
+      setVideoWidth(video.videoWidth)
+      setVideoHeight(video.videoHeight)
+    }
 
     video.addEventListener("timeupdate", handleTimeUpdate)
     video.addEventListener("loadedmetadata", handleLoadedMetadata)
@@ -225,16 +231,34 @@ export function VideoPlayer({ src, poster, onNext, hasNextEpisode, videoSize, se
     }
   }
 
+  const getVideoContainerStyle = () => {
+    if (videoSize === "normal") {
+      return {
+        width: `${videoWidth}px`,
+        height: `${videoHeight}px`,
+        maxWidth: "100%",
+        maxHeight: "calc(100vh - 64px)",
+      }
+    } else if (videoSize === "theater") {
+      return {
+        width: "100%",
+        height: "calc(100vh - 64px)",
+      }
+    } else {
+      return {
+        width: "100%",
+        height: "100%",
+      }
+    }
+  }
+
   return (
     <div
       ref={containerRef}
-      className={`relative group bg-black cursor-pointer ${
-        videoSize === "normal"
-          ? "w-full aspect-video"
-          : videoSize === "theater"
-            ? "w-full aspect-video"
-            : "fixed inset-0 z-50 w-screen h-screen"
+      className={`relative group bg-black cursor-pointer mx-auto ${
+        videoSize === "fullscreen" ? "fixed inset-0 z-50" : ""
       }`}
+      style={getVideoContainerStyle()}
       onMouseMove={showControlsTemporarily}
       onMouseLeave={() => {
         if (isPlaying && !isSettingsOpen && !isSubtitlesOpen && !showVolumeSlider) {
@@ -244,7 +268,7 @@ export function VideoPlayer({ src, poster, onNext, hasNextEpisode, videoSize, se
     >
       <video
         ref={videoRef}
-        className={`w-full h-full object-contain ${videoSize === "fullscreen" ? "absolute inset-0" : ""}`}
+        className="w-full h-full object-contain"
         src={src}
         poster={poster}
         onClick={handleVideoClick}
@@ -286,8 +310,8 @@ export function VideoPlayer({ src, poster, onNext, hasNextEpisode, videoSize, se
               </div>
 
               {/* Controls */}
-              <div className="flex items-center justify-between pointer-events-auto">
-                <div className="flex items-center space-x-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between pointer-events-auto">
+                <div className="flex items-center space-x-2 sm:space-x-4 mb-2 sm:mb-0">
                   <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" onClick={togglePlay}>
                     {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
                   </Button>
@@ -421,7 +445,7 @@ export function VideoPlayer({ src, poster, onNext, hasNextEpisode, videoSize, se
                         <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
                       </svg>
                     ) : (
-                      <Maximize className="h-6 w-6" />
+                      <Minimize2 className="h-6 w-6" />
                     )}
                   </Button>
                 </div>

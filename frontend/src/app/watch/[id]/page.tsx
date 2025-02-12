@@ -15,7 +15,7 @@ const movieData = {
   title: "Stranger Things",
   description:
     "When a young boy disappears, his mother, a police chief and his friends must confront terrifying supernatural forces in order to get him back.",
-  videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+  videoUrl: "https://d2lhiv6mrfblvj.cloudfront.net/1/C%C3%B4%20g%C3%A1i%20%C4%91ang%20m%E1%BA%B7n%20n%E1%BB%93ng%20v%E1%BB%9Bi%20b%E1%BA%A1n%20trai%20th%C3%AC%20v%E1%BB%A3%20ch%C6%B0a%20c%C6%B0%E1%BB%9Bi%20c%E1%BB%A7a%20anh%20g%C3%B5%20c%E1%BB%ADa.mp4",
   poster: "/placeholder.svg?height=1080&width=1920",
   episodes: [
     { id: "1", number: 1, title: "Chapter One: The Vanishing of Will Byers" },
