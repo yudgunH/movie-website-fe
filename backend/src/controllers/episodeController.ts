@@ -23,7 +23,7 @@ export class EpisodeController {
     }
   }
 
-  // GET /api/episodes/:id - Lấy thông tin một tập phim theo id
+  // GET /api/episodes/:id - Lấy thông tin tập phim theo id
   static async getEpisode(req: Request, res: Response) {
     try {
       const id = parseInt(req.params.id);
@@ -34,7 +34,8 @@ export class EpisodeController {
     }
   }
 
-  // POST /api/episodes - Tạo mới một tập phim
+  // POST /api/episodes - Tạo mới một tập phim  
+  // Yêu cầu token admin
   static async createEpisode(req: Request, res: Response) {
     try {
       const newEpisode = await EpisodeService.createEpisode(req.body);
@@ -44,7 +45,8 @@ export class EpisodeController {
     }
   }
 
-  // PUT /api/episodes/:id - Cập nhật một tập phim theo id
+  // PUT /api/episodes/:id - Cập nhật một tập phim theo id  
+  // Yêu cầu token admin
   static async updateEpisode(req: Request, res: Response) {
     try {
       const id = parseInt(req.params.id);
@@ -55,7 +57,21 @@ export class EpisodeController {
     }
   }
 
-  // DELETE /api/episodes/:id - Xóa một tập phim theo id
+  // **Endpoint mới:** PUT /api/episodes/movie/:movieId/episode/:episodeNumber  
+  // Cập nhật tập phim theo movieId và episodeNumber, yêu cầu token admin
+  static async updateEpisodeByMovieAndNumber(req: Request, res: Response) {
+    try {
+      const movieId = parseInt(req.params.movieId);
+      const episodeNumber = parseInt(req.params.episodeNumber);
+      const updatedEpisode = await EpisodeService.updateEpisodeByMovieAndNumber(movieId, episodeNumber, req.body);
+      res.json(updatedEpisode);
+    } catch (error: any) {
+      res.status(404).json({ error: error.message });
+    }
+  }
+
+  // DELETE /api/episodes/:id - Xóa một tập phim theo id  
+  // Yêu cầu token admin
   static async deleteEpisode(req: Request, res: Response) {
     try {
       const id = parseInt(req.params.id);

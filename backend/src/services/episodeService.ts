@@ -1,35 +1,24 @@
 import { Episode } from "../models/Episode";
 
 export class EpisodeService {
-  /**
-   * Lấy thông tin một tập phim theo id
-   * @param id - ID của tập phim
-   */
+  // Lấy thông tin một tập phim theo id
   static async getEpisode(id: number) {
     const episode = await Episode.findByPk(id);
     if (!episode) throw new Error("Episode not found");
     return episode;
   }
 
-  /**
-   * Lấy danh sách tất cả tập phim
-   */
+  // Lấy danh sách tất cả tập phim
   static async getAllEpisodes() {
     return await Episode.findAll();
   }
 
-  /**
-   * Lấy danh sách tập phim theo movieId
-   * @param movieId - ID của phim
-   */
+  // Lấy danh sách tập phim theo movieId
   static async getEpisodesByMovieId(movieId: number) {
     return await Episode.findAll({ where: { movieId } });
   }
 
-  /**
-   * Tạo mới một tập phim
-   * @param data - Dữ liệu của tập phim cần tạo
-   */
+  // Tạo mới một tập phim
   static async createEpisode(data: {
     movieId: number;
     episodeNumber: number;
@@ -37,16 +26,12 @@ export class EpisodeService {
   }) {
     const newEpisode = await Episode.create({
       ...data,
-      // Nếu bảng có cấu hình timestamps: true, Sequelize sẽ tự động xử lý createdAt và updatedAt
+      // Nếu timestamps được bật thì Sequelize sẽ tự cập nhật createdAt, updatedAt
     });
     return newEpisode;
   }
 
-  /**
-   * Cập nhật thông tin tập phim
-   * @param id - ID của tập phim cần cập nhật
-   * @param data - Dữ liệu cập nhật
-   */
+  // Cập nhật thông tin tập phim theo id
   static async updateEpisode(
     id: number,
     data: Partial<{
@@ -63,10 +48,23 @@ export class EpisodeService {
     return episode;
   }
 
-  /**
-   * Xóa tập phim theo id
-   * @param id - ID của tập phim cần xóa
-   */
+  // **Phương thức mới:** Cập nhật tập phim theo movieId và episodeNumber
+  static async updateEpisodeByMovieAndNumber(
+    movieId: number,
+    episodeNumber: number,
+    data: Partial<{
+      videoUrl: string;
+    }>
+  ) {
+    const episode = await Episode.findOne({ where: { movieId, episodeNumber } });
+    if (!episode) throw new Error("Episode not found");
+
+    Object.assign(episode, data);
+    await episode.save();
+    return episode;
+  }
+
+  // Xóa tập phim theo id
   static async deleteEpisode(id: number) {
     const episode = await Episode.findByPk(id);
     if (!episode) throw new Error("Episode not found");
