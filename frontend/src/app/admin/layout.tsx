@@ -1,20 +1,20 @@
-import type React from "react"
-import { Sidebar } from "@/components/admin/sidebar"
-import { Header } from "@/components/admin/header"
+import { SidebarProvider } from "@/components/ui/sidebar"
+import { DashboardLayout } from "@/components/admin/layout"
+import type React from "react" // Added import for React
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode
+export default function RootLayout({
+                                       children,
+                                   }: {
+    children: React.ReactNode
 }) {
-  return (
-    <div className="flex h-screen bg-background">
-      <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background">{children}</main>
-      </div>
-    </div>
-  )
+    return (
+        <html lang="en">
+        <body>
+        <SidebarProvider>
+            <DashboardLayout>{children}</DashboardLayout>
+        </SidebarProvider>
+        </body>
+        </html>
+    )
 }
 
