@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect } from "react"
+import Image from "next/image";
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -318,11 +319,14 @@ function MovieForm({ movie, onSubmit }: MovieFormProps) {
                     <Label htmlFor="poster">Poster Image</Label>
                     <Input id="poster" name="poster" type="file" accept="image/*" onChange={handleFileChange} />
                     {formData.poster && (
-                        <img
-                            src={formData.poster || "/placeholder.svg"}
-                            alt="Movie Poster"
-                            className="mt-2 max-h-40 object-contain"
-                        />
+                        <div className="relative mt-2 max-h-40">
+                            <Image
+                                src={formData.poster || "/placeholder.svg"}
+                                alt="Movie Poster"
+                                fill
+                                className="object-contain"
+                            />
+                        </div>
                     )}
                 </div>
                 <div>

@@ -28,7 +28,7 @@ const featuredMovies: FeaturedMovie[] = [
         title: "The Shawshank Redemption",
         description:
             "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
-        imageUrl: "/phim3.jpg?height=1080&width=1920&text=The+Shawshank+Redemption",
+        imageUrl: "/phim4.jpg?height=1080&width=1920&text=The+Shawshank+Redemption",
     },
     {
         id: 3,

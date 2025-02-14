@@ -20,7 +20,7 @@ interface MovieListProps {
   category: string
 }
 
-export default function MovieList({ title, category }: MovieListProps) {
+export default function MovieList({ title }: MovieListProps) {
   const [movies, setMovies] = useState<Movie[]>([])
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
@@ -48,6 +48,7 @@ export default function MovieList({ title, category }: MovieListProps) {
 
     // Cập nhật danh sách phim, tránh trùng lặp ID
     setMovies((prevMovies) => [...prevMovies, ...newMovies])
+    // Nếu cần phân trang, bạn có thể sử dụng setPage
     setPage((prevPage) => prevPage + 1)
     setLoading(false)
     setLoadingMore(false)
@@ -58,26 +59,25 @@ export default function MovieList({ title, category }: MovieListProps) {
   }, []) // Chạy một lần khi component mount
 
   return (
-    <section className="mb-12">
-      <h2 className="text-2xl font-bold mb-4">{title}</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {loading
-          ? Array.from({ length: 5 }).map((_, index) => <MovieCardSkeleton key={index} />)
-          : movies.map((movie) => <MovieCard key={movie.id} movie={movie} />)}
-      </div>
-      {loadingMore && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <MovieCardSkeleton key={`more-${index}`} />
-          ))}
+      <section className="mb-12">
+        <h2 className="text-2xl font-bold mb-4">{title}</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {loading
+              ? Array.from({ length: 5 }).map((_, index) => <MovieCardSkeleton key={index} />)
+              : movies.map((movie) => <MovieCard key={movie.id} movie={movie} />)}
         </div>
-      )}
-      {!loading && !loadingMore && (
-        <div className="text-center mt-4">
-          <Button onClick={() => fetchMovies()}>Xem thêm</Button>
-        </div>
-      )}
-    </section>
+        {loadingMore && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
+              {Array.from({ length: 5 }).map((_, index) => (
+                  <MovieCardSkeleton key={`more-${index}`} />
+              ))}
+            </div>
+        )}
+        {!loading && !loadingMore && (
+            <div className="text-center mt-4">
+              <Button onClick={() => fetchMovies()}>Xem thêm</Button>
+            </div>
+        )}
+      </section>
   )
 }
-

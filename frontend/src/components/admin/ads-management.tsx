@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import Image from "next/image";
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -67,7 +68,13 @@ export function AdsManagement() {
                     {ads.map((ad) => (
                         <TableRow key={ad.id}>
                             <TableCell>
-                                <img src={ad.image || "/placeholder.svg"} alt="Ad" className="w-16 h-16 object-cover" />
+                                <Image
+                                    src={ad.image || "/placeholder.svg"}
+                                    alt="Ad"
+                                    width={64} // tương đương với w-16 (16 x 4px = 64px)
+                                    height={64} // tương đương với h-16
+                                    className="object-cover"
+                                />
                             </TableCell>
                             <TableCell>{ad.link}</TableCell>
                             <TableCell>{ad.status}</TableCell>
